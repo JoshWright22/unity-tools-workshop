@@ -1,0 +1,31 @@
+title: Start
+---
+<<declare $met_before = false>>
+<<if $met_before>>
+    Shopkeeper: Back again? You've got {coins()} coins.
+<<else>>
+    Shopkeeper: Hey, you're new here. Welcome to the workshop!
+    <<set $met_before to true>>
+<<endif>>
+Shopkeeper: What do you want to know?
+-> What is Yarn Spinner?
+    <<jump WhatIsYarn>>
+-> Can I have some coins?
+    <<jump Coins>>
+-> Nothing, bye.
+    Shopkeeper: See you around.
+===
+
+title: WhatIsYarn
+---
+Shopkeeper: It's a way to write dialogue like a screenplay.
+Shopkeeper: Lines, choices, and jumps between nodes. Writers never have to open a script.
+Shopkeeper: Open Shopkeeper.yarn and change what I say. Then press Play again.
+===
+
+title: Coins
+---
+Shopkeeper: Sure, here's three.
+<<give_coins 3>>
+Shopkeeper: That line ran a command in the game code. Check the counter in the corner.
+===

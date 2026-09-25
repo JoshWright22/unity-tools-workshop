@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Workshop/Scenes/01 Basics.unity
+    guid: b427613920a432646bb096a56b60ab8b
+  - enabled: 1
+    path: Assets/Workshop/Scenes/02 UnityEvents.unity
+    guid: 5e5829427cd069f478e6548b2c720053
+  - enabled: 1
+    path: Assets/Workshop/Scenes/03 Asset Store.unity
+    guid: 3bb62003b8caddd4f94d3a819b142d25
+  - enabled: 1
+    path: Assets/Workshop/Scenes/04 Animator.unity
+    guid: 4c4fe1bec6c73da4fae5ef2b4c964250
+  - enabled: 1
+    path: Assets/Workshop/Scenes/05 Tilemap.unity
+    guid: 0fc707017b3698248b30d19d9e5ad084
+  - enabled: 1
+    path: Assets/Workshop/Scenes/06 Yarn Spinner.unity
+    guid: a2b904e72c5b7464baefecc60c316d0d
+  - enabled: 1
+    path: Assets/Workshop/Scenes/07 ScriptableObjects.unity
+    guid: dfa9d13aa990eb044a956de655a5de3c
+  - enabled: 1
+    path: Assets/Workshop/Scenes/08 Cinemachine Timeline.unity
+    guid: b110c0f808d23934da2507711cf3bae7
+  - enabled: 1
+    path: Assets/Workshop/Scenes/09 Shaders.unity
+    guid: 9c27c17f6dfe04c47be3caf39f1b70ca
+  - enabled: 1
+    path: Assets/Workshop/Scenes/10 Visual Scripting.unity
+    guid: c5c592cef7caa3a4d81d30b54d7e21fe
+  - enabled: 1
+    path: Assets/Workshop/Scenes/Finished/01 Basics (Finished).unity
+    guid: f73bfdcab4d4c5c428c51b4441d21eb8
+  - enabled: 1
+    path: Assets/Workshop/Scenes/Finished/02 UnityEvents (Finished).unity
+    guid: 18b6ad48861ec494b8ea5a81e587b62f
+  - enabled: 1
+    path: Assets/Workshop/Scenes/Finished/04 Animator (Finished).unity
+    guid: b1ea43bd05892f54bb48bb0464627862
+  - enabled: 1
+    path: Assets/Workshop/Scenes/Finished/05 Tilemap (Finished).unity
+    guid: a7860ffcbefa4014faeabc53303cb246
+  - enabled: 1
+    path: Assets/Workshop/Scenes/Finished/06 Yarn Spinner (Finished).unity
+    guid: 722a5166153a0f745b11d851aa5d4cd2
+  - enabled: 1
+    path: Assets/Workshop/Scenes/Finished/07 ScriptableObjects (Finished).unity
+    guid: e9bb1aec0b575124e93c95059a00ca2b
+  - enabled: 1
+    path: Assets/Workshop/Scenes/Finished/08 Cinemachine Timeline (Finished).unity
+    guid: 0c3e324b60a945746bad743bc2dac2d3
+  - enabled: 1
+    path: Assets/Workshop/Scenes/Finished/09 Shaders (Finished).unity
+    guid: 536fab330dfa82d4f9c62becb3ccadd2
+  m_configObjects:
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_UseUCBPForAssetBundles: 0
