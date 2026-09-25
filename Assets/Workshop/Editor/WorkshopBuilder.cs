@@ -32,12 +32,14 @@ public static class WorkshopBuilder
             Directory.CreateDirectory($"{Root}/{dir}");
 
         ImportArt();
+        AssetDatabase.ImportAsset($"{Root}/Dialogue/Workshop.yarnproject", ImportAssetOptions.ForceUpdate);
         var materials = MakeMaterials();
         var tiles = MakeTiles();
         var enemies = MakeEnemyData();
         var controller = MakeAnimator();
         var prefabs = MakePrefabs(controller);
 
+        CoinGate(prefabs, tiles, enemies, materials);
         Lesson01(prefabs);
         Lesson02(prefabs);
         Lesson03(prefabs);
@@ -233,6 +235,7 @@ public static class WorkshopBuilder
         box.size = new Vector2(0.6f, 0.85f);
         box.offset = new Vector2(0, -0.06f);
         player.AddComponent<PlayerMover>();
+        player.AddComponent<PlayerHealth>();
         p.player = SavePrefab(player, "Player");
 
         var animated = (GameObject)PrefabUtility.InstantiatePrefab(p.player);
@@ -245,9 +248,10 @@ public static class WorkshopBuilder
 
         var coin = SpriteObject("Coin", Spr("coin"), 5);
         coin.AddComponent<CircleCollider2D>().isTrigger = true;
-        coin.AddComponent<Spinner>().speed = 0;
+        var collectible = coin.AddComponent<Collectible>();
         var touched = coin.AddComponent<Touched>();
         touched.onTouched = new UnityEvent();
+        UnityEventTools.AddVoidPersistentListener(touched.onTouched, collectible.Collect);
         UnityEventTools.AddBoolPersistentListener(touched.onTouched, coin.SetActive, false);
         p.coin = SavePrefab(coin, "Coin");
 
@@ -269,6 +273,8 @@ public static class WorkshopBuilder
 
         var enemy = SpriteObject("Enemy", Spr("slime"), 5);
         enemy.AddComponent<Enemy>();
+        enemy.AddComponent<CircleCollider2D>().isTrigger = true;
+        enemy.AddComponent<Hazard>();
         p.enemy = SavePrefab(enemy, "Enemy");
 
         return p;
@@ -323,7 +329,7 @@ public static class WorkshopBuilder
 
     static GameObject Score() => new GameObject("Score").AddComponent<ScoreCounter>().gameObject;
 
-    static void PaintLevel(Tilemap map, Tile[] t)
+    static void PaintLevel(Tilemap map, Tile[] t, bool platforms = true)
     {
         for (int x = -12; x <= 40; x++)
         {
@@ -331,7 +337,13 @@ public static class WorkshopBuilder
             for (int y = -4; y < -1; y++) map.SetTile(new Vector3Int(x, y, 0), t[1]);
         }
         for (int y = 0; y < 8; y++) { map.SetTile(new Vector3Int(-12, y, 0), t[2]); map.SetTile(new Vector3Int(40, y, 0), t[2]); }
-        foreach (var (x0, x1, y) in new[] { (2, 5, 2), (8, 11, 4), (14, 16, 6), (20, 25, 3), (28, 31, 5) })
+        if (platforms) PaintPlatforms(map, t);
+    }
+
+    // jump height is about 2.4 units, so each platform is at most 2 above the last
+    static void PaintPlatforms(Tilemap map, Tile[] t)
+    {
+        foreach (var (x0, x1, y) in new[] { (2, 5, 1), (8, 11, 3), (14, 16, 5), (29, 32, 1) })
             for (int x = x0; x <= x1; x++) map.SetTile(new Vector3Int(x, y, 0), t[3]);
     }
 
@@ -351,6 +363,109 @@ public static class WorkshopBuilder
             mapGo.AddComponent<CompositeCollider2D>();
         }
         return map;
+    }
+
+    // ---------- the workshop game ----------
+
+    static void CoinGate(Prefabs p, Tile[] tiles, EnemyData[] enemies, Material[] mats)
+    {
+        var gateMat = AssetDatabase.LoadAssetAtPath<Material>($"{Root}/Materials/Gate Dissolve.mat");
+        if (gateMat == null)
+        {
+            gateMat = new Material(Shader.Find("Workshop/Sprite Dissolve"));
+            AssetDatabase.CreateAsset(gateMat, $"{Root}/Materials/Gate Dissolve.mat");
+        }
+        gateMat.SetFloat("_Amount", 0);
+        gateMat.SetColor("_EdgeColor", new Color(0.12f, 0.71f, 0.67f));
+        EditorUtility.SetDirty(gateMat);
+
+        var s = NewScene("Coin Gate: build a game in 90 minutes",
+            "1. Tilemap: paint platforms, add colliders (15 min)\n" +
+            "2. Cinemachine: follow camera (5 min)\n" +
+            "3. Animator: idle, walk, jump (20 min)\n" +
+            "4. UnityEvents: coins + the flag (10 min)\n" +
+            "5. ScriptableObjects: slimes (10 min)\n" +
+            "6. Yarn Spinner: the gatekeeper (15 min)\n" +
+            "7. Shaders: hit flash, gate color (5 min)\n" +
+            "8. Commit + push, play each other's (10 min)\n" +
+            "Full steps: Guide/Coin-Gate.md");
+
+        var map = MakeGrid(tiles, false);
+        PaintLevel(map, tiles, false);
+        var player = Place(p.player, new Vector3(-9, 1, 0), "Player");
+        Score();
+        var game = new GameObject("Game").AddComponent<GameState>();
+
+        var keeper = Place(p.npc, new Vector3(22.5f, 0.5f, 0), "Gatekeeper");
+
+        var gate = SpriteObject("Gate", Spr("tile_brick"), 5);
+        gate.transform.position = new Vector3(26.5f, 2, 0);
+        gate.transform.localScale = new Vector3(1, 4, 1);
+        gate.AddComponent<BoxCollider2D>();
+        gate.AddComponent<Gate>();
+        gate.GetComponent<SpriteRenderer>().sharedMaterial = gateMat;
+
+        var flag = SpriteObject("Flag", Spr("flag"), 5);
+        flag.transform.position = new Vector3(35.5f, 0.5f, 0);
+        flag.AddComponent<BoxCollider2D>().isTrigger = true;
+        var flagTouched = flag.AddComponent<Touched>();
+        flagTouched.onTouched = new UnityEvent();
+
+        Save(s, "00 Coin Gate");
+
+        // finished version
+        Object.DestroyImmediate(GameObject.Find("Grid"));
+        MakeGrid(tiles, true);
+
+        Object.DestroyImmediate(player);
+        player = Place(p.playerAnimated, new Vector3(-9, 1, 0), "Player");
+        player.GetComponent<SpriteRenderer>().sharedMaterial = mats[0];
+
+        Camera.main.gameObject.AddComponent<CinemachineBrain>();
+        var vcam = new GameObject("CinemachineCamera").AddComponent<CinemachineCamera>();
+        vcam.Follow = player.transform;
+        vcam.Lens = new LensSettings { OrthographicSize = 6, NearClipPlane = 0.3f, FarClipPlane = 1000 };
+        vcam.transform.position = new Vector3(-9, 2, -10);
+        var composer = vcam.gameObject.AddComponent<CinemachinePositionComposer>();
+        composer.Damping = new Vector3(0.6f, 0.4f, 0);
+        composer.CameraDistance = 10;
+
+        foreach (var pos in new[] { new Vector2(-4, 0.5f), new Vector2(0, 0.5f), new Vector2(3.5f, 2.6f), new Vector2(4.5f, 2.6f),
+                     new Vector2(9.5f, 4.6f), new Vector2(10.5f, 4.6f), new Vector2(15.5f, 6.6f) })
+            Place(p.coin, pos);
+
+        foreach (var (x, y, d) in new[] { (7f, 0.5f, 0), (13f, 0.5f, 0), (19f, 2.5f, 1) })
+        {
+            var e = Place(p.enemy, new Vector3(x, y, 0), enemies[d].displayName);
+            e.GetComponent<Enemy>().data = enemies[d];
+        }
+
+        var runner = AddDialogueSystem();
+        if (runner != null)
+        {
+            var talker = keeper.AddComponent<Talker>();
+            talker.dialogueRunner = runner;
+            talker.startNode = "Gatekeeper";
+        }
+
+        UnityEventTools.AddVoidPersistentListener(flagTouched.onTouched, game.Win);
+        Finished(s, "00 Coin Gate");
+    }
+
+    static DialogueRunner AddDialogueSystem()
+    {
+        var prefabPath = AssetDatabase.FindAssets("Dialogue System t:Prefab")
+            .Select(AssetDatabase.GUIDToAssetPath).FirstOrDefault(x => x.Contains("yarnspinner"));
+        if (prefabPath == null) { Debug.LogError("Yarn Spinner Dialogue System prefab not found"); return null; }
+        var system = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath));
+        var runner = system.GetComponentInChildren<DialogueRunner>();
+        var so = new SerializedObject(runner);
+        so.FindProperty("yarnProject").objectReferenceValue = AssetDatabase.LoadAssetAtPath<YarnProject>($"{Root}/Dialogue/Workshop.yarnproject");
+        so.FindProperty("autoStart").boolValue = false;
+        so.ApplyModifiedPropertiesWithoutUndo();
+        if (Object.FindFirstObjectByType<EventSystem>() == null)
+            new GameObject("EventSystem").AddComponent<EventSystem>().gameObject.AddComponent<InputSystemUIInputModule>();
+        return runner;
     }
 
     // ---------- lessons ----------
@@ -381,14 +496,8 @@ public static class WorkshopBuilder
         Save(s, "02 UnityEvents");
 
         Object.DestroyImmediate(GameObject.Find("Coin (make me work)"));
-        var counter = score.GetComponent<ScoreCounter>();
         for (int i = 0; i < 6; i++)
-        {
-            var coin = Place(p.coin, new Vector3(-3 + i * 1.6f, 0.5f + (i % 2) * 1.5f, 0));
-            var t = coin.GetComponent<Touched>();
-            UnityEventTools.AddIntPersistentListener(t.onTouched, counter.Add, 1);
-            PrefabUtility.RecordPrefabInstancePropertyModifications(t);
-        }
+            Place(p.coin, new Vector3(-3 + i * 1.6f, 0.5f + (i % 2) * 1.5f, 0));
         Finished(s, "02 UnityEvents");
     }
 

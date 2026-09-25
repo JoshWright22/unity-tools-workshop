@@ -22,6 +22,8 @@ public class PlayerMover : MonoBehaviour
 
     void Update()
     {
+        IsGrounded = CheckGround();
+
         var keys = Keyboard.current;
         if (keys == null) return;
 
@@ -29,7 +31,6 @@ public class PlayerMover : MonoBehaviour
         if (keys.aKey.isPressed || keys.leftArrowKey.isPressed) x -= 1;
         if (keys.dKey.isPressed || keys.rightArrowKey.isPressed) x += 1;
 
-        IsGrounded = CheckGround();
         var v = body.linearVelocity;
         v.x = x * speed;
         if (keys.spaceKey.wasPressedThisFrame && IsGrounded) v.y = jumpForce;

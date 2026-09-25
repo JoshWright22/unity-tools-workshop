@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Workshop/Scenes/00 Coin Gate.unity
+    guid: e2a20f6c817f957449fbd96e33f6274c
+  - enabled: 1
     path: Assets/Workshop/Scenes/01 Basics.unity
     guid: b427613920a432646bb096a56b60ab8b
   - enabled: 1
@@ -35,6 +38,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Workshop/Scenes/10 Visual Scripting.unity
     guid: c5c592cef7caa3a4d81d30b54d7e21fe
+  - enabled: 1
+    path: Assets/Workshop/Scenes/Finished/00 Coin Gate (Finished).unity
+    guid: 4531a0e9d44375442af1b8562550a431
   - enabled: 1
     path: Assets/Workshop/Scenes/Finished/01 Basics (Finished).unity
     guid: f73bfdcab4d4c5c428c51b4441d21eb8

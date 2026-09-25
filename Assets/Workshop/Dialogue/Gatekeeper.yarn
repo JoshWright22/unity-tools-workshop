@@ -1,0 +1,18 @@
+title: Gatekeeper
+---
+<<if coins() >= 5>>
+    Gatekeeper: Five coins! A deal's a deal.
+    <<take_coins 5>>
+    <<open_gate>>
+    Gatekeeper: The flag is past the gate. Go win.
+<<else>>
+    Gatekeeper: Nobody gets through this gate for less than 5 coins.
+    Gatekeeper: You've got {coins()}.
+    -> Where are the coins?
+        Gatekeeper: Up on the platforms. Watch out for the slimes.
+    -> Can I just have some?
+        Gatekeeper: Fine. One. Don't tell anyone.
+        <<give_coins 1>>
+    -> Okay, bye.
+<<endif>>
+===

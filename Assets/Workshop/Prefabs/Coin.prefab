@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 29440707216026591}
   - component: {fileID: 2267427149223885622}
   - component: {fileID: 6052143175299072853}
-  - component: {fileID: 6841698235286520296}
+  - component: {fileID: 2178633291070686020}
   - component: {fileID: 8189968148427055848}
   m_Layer: 0
   m_Name: Coin
@@ -130,7 +130,7 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
---- !u!114 &6841698235286520296
+--- !u!114 &2178633291070686020
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -139,10 +139,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8792528171916495777}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b26691f1107b4841be839c1227e4555, type: 3}
+  m_Script: {fileID: 11500000, guid: c6c24ae1add08d0419adcd8478b6f1a5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Spinner
-  speed: 0
+  m_EditorClassIdentifier: Assembly-CSharp::Collectible
+  value: 1
 --- !u!114 &8189968148427055848
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,6 +158,18 @@ MonoBehaviour:
   onTouched:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 2178633291070686020}
+        m_TargetAssemblyTypeName: Collectible, Assembly-CSharp
+        m_MethodName: Collect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 8792528171916495777}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive

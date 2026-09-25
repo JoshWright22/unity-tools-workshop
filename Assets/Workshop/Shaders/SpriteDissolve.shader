@@ -54,7 +54,7 @@ Shader "Workshop/Sprite Dissolve"
                 float4 c = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv) * i.color;
                 float n = noise(i.uv * _NoiseScale);
                 clip(n - _Amount);
-                if (n - _Amount < _EdgeWidth) c.rgb = _EdgeColor.rgb;
+                if (_Amount > 0 && n - _Amount < _EdgeWidth) c.rgb = _EdgeColor.rgb;
                 return c;
             }
             ENDHLSL
